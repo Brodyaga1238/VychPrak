@@ -164,9 +164,9 @@
         while (counter < n)
         {
             counter++;
-            double f0 = Function(x0); // значение функции в точке x0
-            double f1 = Function(x1); // значение функции в точке x1
-            x2 = x1 - f1 * (x1 - x0) / (f1 - f0); // новое приближение
+            double f0 = Function(x0);
+            double f1 = Function(x1)
+            x2 = x1 - f1 * (x1 - x0) / (f1 - f0); /
             absoluteError = Math.Abs(Function(x2));
 
             if (Math.Abs(x2 - x1) < epsilon)
