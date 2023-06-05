@@ -13,7 +13,7 @@
         double h = Math.Abs((a - b) / (n)); // расчет шага для табулирования функции
         Console.WriteLine("ЧИСЛЕННЫЕ МЕТОДЫ РЕШЕНИЯ НЕЛИНЕЙНЫХ УРАВНЕНИЙ");
         Console.WriteLine($"Исходные параметры: A = {a}, B = {b}, epsilon = {epsilon}");
-        Console.WriteLine($"Вид функции: f(x) = x - 10 * sin(x)");
+        Console.WriteLine("Вид функции: f(x) = x - 10 * sin(x)");
         DivideRoots(a,b,epsilon,n,h);
     }
     static void DivideRoots(double a, double b, double epsilon, int n,double h)
@@ -29,7 +29,7 @@
             if (y1 * y2 <= 0)
             {
                 Counter++;
-                Console.WriteLine($"На этом отрезке найден корень: [{x1},{x2}]");
+                Console.WriteLine($"На этом отрезке найден корень: [{x1}:{x2}]");
                 print();
                 bisection(x1,x2,epsilon);
                 print();
@@ -37,7 +37,7 @@
                 print();
                 ModNewtonMethod(x1,x2,epsilon);
                 print();
-                SecantMethod(x1,x2,epsilon);
+                SecantMethod(x1,x2,epsilon,n);
                 print();
             }
             x1 = x2;
@@ -59,84 +59,90 @@
     {
         double a = A;
         double b = B;
-        int counter=0;
-        double c=(a + b) / 2;;
+        int counter = 0;
+        double c;
         if (Function(a) * Function(b) > 0)
         {
-            Console.WriteLine($"На отрезке [{a},{b}] корней нет");
+            Console.WriteLine($"На отрезке [{a}:{b}] корней нет");
             return;
         }
-        while(Math.Abs(Function(c) - 0) > epsilon)
+        while (Math.Abs(b - a) > epsilon) // Изменен критерий остановки: теперь нужно проверять длину отрезка, а не только значение функции в середине
         {
+            c = (a + b) / 2;
             if (Function(a) * Function(c) < 0) b = c;
             else a = c;
             counter++;
-            c=(a + b) / 2;
         }
-        if (counter == 0) counter = 1;
         double x = (a + b) / 2;
-        double inaccuracy = (b - a) / 2;
+        double inaccuracy = Math.Abs(b - a) / 2; // Исправлено вычисление длины отрезка
 
-        Console.WriteLine($"Метод бисекции");
-        Console.WriteLine($"Начальное приближение: [{A},{B}]");
-        Console.WriteLine($"количество шагов {counter}");
-        Console.WriteLine($"Приближенное решение x = {x}");
-        Console.WriteLine($"Длина получившегося отрезка = {inaccuracy}");
-        Console.WriteLine($"Абсолютная величина невязки решения {Math.Abs(Function(x)-0)}");
+        Console.WriteLine($"Метод бисекции:");
+        Console.WriteLine($"Начальное приближение: [{A}:{B}]");
+        Console.WriteLine($"Количество шагов: {counter}");
+        Console.WriteLine($"Приближенное решение: x = {x}");
+        Console.WriteLine($"Длина получившегося отрезка: {inaccuracy}");
+        Console.WriteLine($"Абсолютная величина невязки решения: {Math.Abs(Function(x))}");
     }
     static double equat(double x)
     {
         return 1 - 10 * Math.Cos(x);
     }
-    
+
     static void NewtonMethod(double a, double b, int n, double epsilon)
     {
         double x0 = (a + b) / 2;
-        double x = 0;
+        double x = 0; // Избыточное присваивание начального значения
         double deltax = Math.Abs(x0 - x);
         int counter = 0;
         for (int i = 1; i <= n; i++)
         {
             x = x0;
-            x0 = x0 - Function(x0) / equat(x0);
+            double derivative = equat(x0);
+            if (Math.Abs(derivative) < epsilon) // Проверка на разрыв производной
+            {
+                Console.WriteLine($"Метод Ньютона не сходится: разрыв производной на интервале [{a}:{b}]");
+                return;
+            }
+            x0 = x0 - Function(x0) / derivative;
             deltax = Math.Abs(x0 - x);
             counter = i;
             if (Math.Abs(Function(x0)) < epsilon)
             {
-                Console.WriteLine($"Метод Ньютона");
+                Console.WriteLine("Метод Ньютона:");
                 Console.WriteLine($"Начальное приближение: {(a + b) / 2}");
-                Console.WriteLine($"количество шагов {counter}");
-                Console.WriteLine($"Приближенное решение x = {x}");
-                Console.WriteLine($"|x_m-x_(m-1)| = {deltax}");
-                Console.WriteLine($"Абсолютная величина невязки решения {Math.Abs(Function(x)-0)}");
+                Console.WriteLine($"Количество шагов: {counter}");
+                Console.WriteLine($"Приближенное решение: x = {x0}");
+                Console.WriteLine($"| x_m - x_(m-1) | = {deltax}");
+                Console.WriteLine($"Абсолютная величина невязки решения: {Math.Abs(Function(x0))}");
                 return;
             }
         }
-        Console.WriteLine($"Метод Ньютона");
+        Console.WriteLine($"Метод Ньютона:");
         Console.WriteLine($"Начальное приближение: {(a + b) / 2}");
-        Console.WriteLine($"количество шагов {counter}");
-        Console.WriteLine($"Приближенное решение x = {x}");
-        Console.WriteLine($"|x_m-x_(m-1)| = {deltax}");
-        Console.WriteLine($"Абсолютная величина невязки решения {Math.Abs(Function(x)-0)}");
+        Console.WriteLine($"Количество шагов: {counter}");
+        Console.WriteLine($"Приближенное решение: x = {x0}");
+        Console.WriteLine($"| x_m - x_(m-1) | = {deltax}");
+        Console.WriteLine($"Абсолютная величина невязки решения: {Math.Abs(Function(x0))}");
     }
 
     static void ModNewtonMethod(double a, double b, double epsilon)
     {
         double x0 = (a + b) / 2;
         double x = x0;
-        double deltax = double.MaxValue;
+        double deltax = double.MaxValue; // Начальное значение deltax
         int counter = 0;
 
-        while (Math.Abs(Function(x)) > epsilon && Math.Abs(deltax) > epsilon)
+        while (Math.Abs(Function(x)) > epsilon && Math.Abs(deltax) > epsilon) // Условие выхода из цикла
         {
-            if (Math.Abs(equat(x0)) < epsilon)
+            double derivative = equat(x0); // значение производной в точке x0
+            if (Math.Abs(derivative) < epsilon) // если производная близка к 0, метод не сходится
             {
-                Console.WriteLine($"Метод модифицированного Ньютона не сходится: разрыв производной на интервале [{a}, {b}]");
+                Console.WriteLine($"Метод модифицированного Ньютона не сходится: разрыв производной на интервале [{a}: {b}]");
                 return;
             }
             counter++;
-            x = x0 - Function(x) / equat(x0);
-            deltax = x - x0;
+            x = x0 - Function(x) / derivative; // новое приближение
+            deltax = Math.Abs(x - x0); // вычисляем изменение x
             x0 = x;
         }
         Console.WriteLine($"Метод модифицированного Ньютона:");
@@ -146,24 +152,26 @@
         Console.WriteLine($"| x_m - x_(m-1) | = {Math.Abs(deltax)}");
         Console.WriteLine($"Абсолютная величина невязки: {Math.Abs(Function(x))}");
     }
-    static void SecantMethod(double A, double B, double epsilon)
+    static void SecantMethod(double A, double B, double epsilon, int n)
     {
         double x0 = A;
         double x1 = B;
         int counter = 0;
-        double x2 = 0, deltax=0;
+        double x2 = 0, deltax = 0;
         double absoluteError = 0;
 
         Console.WriteLine("Метод секущих");
-        while (counter < 6)
+        while (counter < n)
         {
             counter++;
-            x2 = x1 - (Function(x1) * (x1 - x0)) / (Function(x1) - Function(x0));
+            double f0 = Function(x0); // значение функции в точке x0
+            double f1 = Function(x1); // значение функции в точке x1
+            x2 = x1 - f1 * (x1 - x0) / (f1 - f0); // новое приближение
             absoluteError = Math.Abs(Function(x2));
 
             if (Math.Abs(x2 - x1) < epsilon)
             {
-                Console.WriteLine($"Начальное приближение: [{A}{B}]");
+                Console.WriteLine($"Начальное приближение: [{A}:{B}]");
                 Console.WriteLine($"Количество шагов: {counter}");
                 Console.WriteLine($"Приближенное решение: x = {x2}");
                 Console.WriteLine($"| x_m - x_(m-1) | = {Math.Abs(deltax)}");
@@ -175,7 +183,7 @@
             x1 = x2;
             deltax = x1 - x0;
         }
-        Console.WriteLine($"Начальное приближение: [{A}{B}]");
+        Console.WriteLine($"Начальное приближение: [{A}:{B}]");
         Console.WriteLine($"Количество шагов: {counter}");
         Console.WriteLine($"Приближенное решение: x = {x2}");
         Console.WriteLine($"| x_m - x_(m-1) | = {Math.Abs(deltax)}");
