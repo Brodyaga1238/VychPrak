@@ -66,7 +66,7 @@
             Console.WriteLine($"На отрезке [{a}:{b}] корней нет");
             return;
         }
-        while (Math.Abs(b - a) > epsilon) // Изменен критерий остановки: теперь нужно проверять длину отрезка, а не только значение функции в середине
+        while (Math.Abs(b - a) > epsilon) 
         {
             c = (a + b) / 2;
             if (Function(a) * Function(c) < 0) b = c;
@@ -74,7 +74,7 @@
             counter++;
         }
         double x = (a + b) / 2;
-        double inaccuracy = Math.Abs(b - a) / 2; // Исправлено вычисление длины отрезка
+        double inaccuracy = Math.Abs(b - a) / 2; 
 
         Console.WriteLine($"Метод бисекции:");
         Console.WriteLine($"Начальное приближение: [{A}:{B}]");
@@ -91,14 +91,14 @@
     static void NewtonMethod(double a, double b, int n, double epsilon)
     {
         double x0 = (a + b) / 2;
-        double x = 0; // Избыточное присваивание начального значения
+        double x = 0; 
         double deltax = Math.Abs(x0 - x);
         int counter = 0;
         for (int i = 1; i <= n; i++)
         {
             x = x0;
             double derivative = equat(x0);
-            if (Math.Abs(derivative) < epsilon) // Проверка на разрыв производной
+            if (Math.Abs(derivative) < epsilon)
             {
                 Console.WriteLine($"Метод Ньютона не сходится: разрыв производной на интервале [{a}:{b}]");
                 return;
@@ -129,20 +129,20 @@
     {
         double x0 = (a + b) / 2;
         double x = x0;
-        double deltax = double.MaxValue; // Начальное значение deltax
+        double deltax = 0;
         int counter = 0;
 
-        while (Math.Abs(Function(x)) > epsilon && Math.Abs(deltax) > epsilon) // Условие выхода из цикла
+        while (Math.Abs(Function(x)) > epsilon && Math.Abs(deltax) > epsilon) 
         {
-            double derivative = equat(x0); // значение производной в точке x0
-            if (Math.Abs(derivative) < epsilon) // если производная близка к 0, метод не сходится
+            double derivative = equat(x0); 
+            if (Math.Abs(derivative) < epsilon)
             {
                 Console.WriteLine($"Метод модифицированного Ньютона не сходится: разрыв производной на интервале [{a}: {b}]");
                 return;
             }
             counter++;
-            x = x0 - Function(x) / derivative; // новое приближение
-            deltax = Math.Abs(x - x0); // вычисляем изменение x
+            x = x0 - Function(x) / derivative;
+            deltax = Math.Abs(x - x0); 
             x0 = x;
         }
         Console.WriteLine($"Метод модифицированного Ньютона:");
